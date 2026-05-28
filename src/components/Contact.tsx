@@ -30,6 +30,15 @@ const Contact = () => {
             </p>
           </div>
           <div className="contact-box">
+            <h4>Resume</h4>
+            <a
+              href="/resume.pdf"
+              target="_blank"
+              data-cursor="disable"
+              className="contact-social"
+            >
+              Download CV <MdArrowOutward />
+            </a>
             <h4>Social</h4>
             <a
               href="https://github.com/vanshDalal521"
