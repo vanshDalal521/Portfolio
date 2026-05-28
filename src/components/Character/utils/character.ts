@@ -5,8 +5,6 @@ import { decryptFile } from "./decrypt";
 
 function styleCharacter(character: THREE.Object3D) {
   const hairColor = new THREE.Color(0x111111);
-  const outfitColor = new THREE.Color(0x1a1a2e);
-  const techAccent = new THREE.Color(0x2d1b4e);
   const shoeColor = new THREE.Color(0x0d0d0d);
 
   character.traverse((child: any) => {
@@ -18,9 +16,10 @@ function styleCharacter(character: THREE.Object3D) {
       ? mesh.material
       : [mesh.material];
 
-    materials.forEach((mat: THREE.MeshStandardMaterial) => {
-      if (!mat.color) return;
-      const color = mat.color;
+    materials.forEach((mat) => {
+      const m = mat as THREE.MeshStandardMaterial;
+      if (!m.color) return;
+      const color = m.color;
 
       const r = color.r;
       const g = color.g;
@@ -45,19 +44,19 @@ function styleCharacter(character: THREE.Object3D) {
         isDark;
 
       if (isSkin) {
-        mat.roughness = 0.55;
-        mat.metalness = 0;
+        m.roughness = 0.55;
+        m.metalness = 0;
       } else if (isShoe && isDark) {
-        mat.color.copy(shoeColor);
-        mat.roughness = 0.4;
-        mat.metalness = 0.7;
+        m.color.copy(shoeColor);
+        m.roughness = 0.4;
+        m.metalness = 0.7;
       } else if (isHair) {
-        mat.color.copy(hairColor);
-        mat.roughness = 0.3;
-        mat.metalness = 0.2;
-        if (mat.emissive) {
-          mat.emissive.setHex(0x222244);
-          mat.emissiveIntensity = 0.05;
+        m.color.copy(hairColor);
+        m.roughness = 0.3;
+        m.metalness = 0.2;
+        if (m.emissive) {
+          m.emissive.setHex(0x222244);
+          m.emissiveIntensity = 0.05;
         }
       } else {
         const clothesDark = new THREE.Color(
@@ -65,12 +64,12 @@ function styleCharacter(character: THREE.Object3D) {
           Math.max(0.06, color.g * 0.15),
           Math.max(0.12, color.b * 0.2)
         );
-        mat.color.lerp(clothesDark, 0.7);
-        mat.roughness = Math.min(1, mat.roughness * 1.3);
-        mat.metalness = 0.05;
-        if (mat.emissive) {
-          mat.emissive.setHex(0x1a0a2e);
-          mat.emissiveIntensity = 0.08;
+        m.color.lerp(clothesDark, 0.7);
+        m.roughness = Math.min(1, m.roughness * 1.3);
+        m.metalness = 0.05;
+        if (m.emissive) {
+          m.emissive.setHex(0x1a0a2e);
+          m.emissiveIntensity = 0.08;
         }
       }
     });
