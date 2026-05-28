@@ -31,11 +31,11 @@ const Navbar = () => {
     links.forEach((elem) => {
       let element = elem as HTMLAnchorElement;
       element.addEventListener("click", (e) => {
+        let section = (e.currentTarget as HTMLAnchorElement).getAttribute("data-href");
+        if (!section) return;
         if (window.innerWidth > 1024) {
           e.preventDefault();
-          let elem = e.currentTarget as HTMLAnchorElement;
-          let section = elem.getAttribute("data-href");
-          lenis.scrollTo(section as string, { offset: 0, duration: 1.5 });
+          lenis.scrollTo(section, { offset: 0, duration: 1.5 });
         }
       });
     });
