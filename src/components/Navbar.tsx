@@ -10,14 +10,15 @@ export let lenis: Lenis;
 
 const Navbar = () => {
   useEffect(() => {
+    const isMobile = window.innerWidth <= 1024;
     lenis = new Lenis({
-      duration: 1.2,
+      duration: isMobile ? 0.8 : 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
       gestureOrientation: "vertical",
-      smoothWheel: true,
+      smoothWheel: !isMobile,
       wheelMultiplier: 1,
-      touchMultiplier: 2,
+      touchMultiplier: 1.5,
       autoRaf: true,
     });
 

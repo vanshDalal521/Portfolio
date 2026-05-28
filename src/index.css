@@ -31,7 +31,8 @@ h6 {
   font-family: "Geist", sans-serif;
 }
 html {
-  overflow: hidden;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 body {
   margin: 0;
@@ -41,7 +42,7 @@ body {
   --cWidth: calc(100% - 30px);
   --cMaxWidth: 1920px;
   max-width: 100vw;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 a {
   color: inherit;

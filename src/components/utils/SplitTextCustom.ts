@@ -29,61 +29,79 @@ class SplitTextCustom {
 
     els.forEach((el) => {
       this.originalHTML.set(el, el.innerHTML);
-      const text = el.textContent || "";
       el.innerHTML = "";
 
-      const words = text.split(/(\s+)/);
+      const lineSpans: HTMLElement[] = [];
       const wordSpans: HTMLElement[] = [];
       const charSpans: HTMLElement[] = [];
-      const lineSpans: HTMLElement[] = [];
 
-      let currentLine: HTMLElement | null = null;
-      let lineIndex = 0;
+      const processNode = (node: Node, currentLine: () => HTMLElement | null, setLine: (l: HTMLElement) => void) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const text = node.textContent || "";
+          const parts = text.split(/(\s+)/);
+          parts.forEach((part) => {
+            if (part === "") return;
+            if (part.trim() === "") {
+              let line = currentLine();
+              if (line) line.appendChild(document.createTextNode(part));
+              return;
+            }
+            const wordSpan = document.createElement("span");
+            wordSpan.className = "split-word";
+            wordSpan.style.display = "inline-block";
+            wordSpans.push(wordSpan);
 
-      words.forEach((word) => {
-        if (word.trim() === "") {
-          if (currentLine) currentLine.appendChild(document.createTextNode(word));
-          return;
-        }
+            if (type.includes("chars")) {
+              const chars = part.split("");
+              chars.forEach((char) => {
+                const charSpan = document.createElement("span");
+                charSpan.className = "split-char";
+                charSpan.style.display = "inline-block";
+                charSpan.textContent = char;
+                wordSpan.appendChild(charSpan);
+                charSpans.push(charSpan);
+              });
+            } else {
+              wordSpan.textContent = part;
+            }
 
-        const wordSpan = document.createElement("span");
-        wordSpan.className = "split-word";
-        wordSpan.style.display = "inline-block";
-        wordSpans.push(wordSpan);
-
-        if (type.includes("chars")) {
-          const chars = word.split("");
-          chars.forEach((char) => {
-            const charSpan = document.createElement("span");
-            charSpan.className = "split-char";
-            charSpan.style.display = "inline-block";
-            charSpan.textContent = char;
-            wordSpan.appendChild(charSpan);
-            charSpans.push(charSpan);
+            if (type.includes("lines")) {
+              let line = currentLine();
+              if (!line) {
+                line = document.createElement("span");
+                line.className = linesClass;
+                line.style.display = "block";
+                el.appendChild(line);
+                lineSpans.push(line);
+                setLine(line);
+              }
+              line.appendChild(wordSpan);
+              line.appendChild(document.createTextNode(" "));
+            } else {
+              el.appendChild(wordSpan);
+              el.appendChild(document.createTextNode(" "));
+            }
           });
-        } else {
-          wordSpan.textContent = word;
-        }
-
-        if (type.includes("lines")) {
-          const rect = wordSpan.getBoundingClientRect();
-          const containerRect = el.getBoundingClientRect();
-          const lineNum = Math.round((rect.top - containerRect.top) / rect.height);
-
-          if (!currentLine || lineNum !== lineIndex) {
-            currentLine = document.createElement("span");
-            currentLine.className = linesClass;
-            currentLine.style.display = "block";
-            el.appendChild(currentLine);
-            lineSpans.push(currentLine);
-            lineIndex = lineNum;
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          const element = node as HTMLElement;
+          if (element.tagName === "BR") {
+            const line = document.createElement("span");
+            line.className = linesClass;
+            line.style.display = "block";
+            el.appendChild(line);
+            lineSpans.push(line);
+            setLine(line);
+          } else {
+            const children = Array.from(element.childNodes);
+            children.forEach((child) => processNode(child, currentLine, setLine));
           }
-          currentLine.appendChild(wordSpan);
-          currentLine.appendChild(document.createTextNode(" "));
-        } else {
-          el.appendChild(wordSpan);
-          el.appendChild(document.createTextNode(" "));
         }
+      };
+
+      const children = Array.from(el.childNodes);
+      let currentLine: HTMLElement | null = null;
+      children.forEach((child) => {
+        processNode(child, () => currentLine, (l) => { currentLine = l; });
       });
 
       this.words.push(...wordSpans);
