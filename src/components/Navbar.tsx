@@ -74,11 +74,6 @@ const Navbar = () => {
               <HoverLinks text="CONTACT" />
             </a>
           </li>
-          <li>
-            <a href="/resume.pdf" target="_blank" rel="noopener noreferrer">
-              <HoverLinks text="RESUME" />
-            </a>
-          </li>
         </ul>
       </div>
 
