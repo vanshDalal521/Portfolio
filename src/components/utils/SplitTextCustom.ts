@@ -53,6 +53,8 @@ class SplitTextCustom {
         wordSpans.push(ws);
       };
 
+      const blockTags = new Set(["DIV", "P", "H1", "H2", "H3", "H4", "H5", "H6", "UL", "OL", "LI", "SECTION", "HEADER", "FOOTER", "NAV", "ARTICLE", "ASIDE", "MAIN", "BLOCKQUOTE", "HR", "FIGURE", "FIGCAPTION", "TABLE", "TR", "TD", "TH"]);
+
       const walkNodes = (nodes: NodeListOf<ChildNode>) => {
         for (const node of nodes) {
           if (node.nodeType === Node.TEXT_NODE) {
@@ -63,6 +65,9 @@ class SplitTextCustom {
             }
           } else if ((node as HTMLElement).tagName === "BR") {
             wordSpans.push(null);
+          } else if (blockTags.has((node as HTMLElement).tagName)) {
+            wordSpans.push(null);
+            walkNodes(node.childNodes);
           } else {
             walkNodes(node.childNodes);
           }
